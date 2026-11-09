@@ -367,7 +367,7 @@ export default function App() {
         m3u8Url: data.m3u8Url || '',
         binUrl: data.binUrl || null,
         referer: data.referer || null,
-        explanation: data.explanation || 'Parsed via Groq Llama-3.3-70B.',
+        explanation: data.explanation || 'Parsed via Groq openai/gpt-oss-20b.',
       });
 
       if (data.m3u8Url) {
@@ -588,7 +588,7 @@ export default function App() {
               }`}
             >
               <Sparkles className="h-3 w-3" />
-              <span>Groq Llama-3.3-70B</span>
+              <span>Groq GPT-OSS-20B</span>
             </div>
           </div>
         </div>
@@ -730,7 +730,7 @@ export default function App() {
                           Parsed via{' '}
                           <strong className="text-zinc-200">
                             {activeResult.source === 'groq_ai'
-                              ? 'Groq AI (Llama-3.3-70B)'
+                              ? 'Groq AI (openai/gpt-oss-20b)'
                               : 'Instant Regex (0ms)'}
                           </strong>
                         </span>
@@ -1010,8 +1010,7 @@ export default function App() {
       {/* Subtle Footer */}
       <footer className="border-t border-zinc-900/90 py-4 px-4 sm:px-6 text-center text-[11px] text-zinc-500">
         StreamForge CLI • Hybrid 0ms Client Regex + Groq{' '}
-        <code className="font-mono text-zinc-400">llama-3.3-70b-versatile</code> Serverless
-        Extractor
+        <code className="font-mono text-zinc-400">openai/gpt-oss-20b</code> Serverless Extractor
       </footer>
 
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />

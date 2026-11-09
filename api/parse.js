@@ -1,11 +1,11 @@
 /**
  * StreamForge CLI — Vercel Serverless Function (/api/parse.js)
- * Uses Groq Chat Completions (llama-3.3-70b-versatile) with JSON mode
+ * Uses Groq Chat Completions (openai/gpt-oss-20b) with JSON mode
  * to parse messy DevTools network dumps, HLS segment URLs, and cURL commands.
  */
 
 const GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
-const GROQ_MODEL = 'llama-3.3-70b-versatile';
+const GROQ_MODEL = 'openai/gpt-oss-20b';
 
 function normalizeFolderPath(folderPath) {
   if (!folderPath || typeof folderPath !== 'string') return '';
@@ -209,6 +209,8 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: GROQ_MODEL,
         temperature: 0.1,
+        max_completion_tokens: 2048,
+        reasoning_effort: 'low',
         response_format: { type: 'json_object' },
         messages: [
           {
@@ -238,17 +240,23 @@ export default async function handler(req, res) {
     }
 
     const completion = await groqResponse.json();
-    const content = completion?.choices?.[0]?.message?.content;
-    if (!content) {
+    const rawContent = completion?.choices?.[0]?.message?.content;
+    if (!rawContent) {
       return res.status(502).json({
         code: 'EMPTY_GROQ_RESPONSE',
         error: 'Groq returned an empty completion payload.',
       });
     }
 
+    const cleanedJsonText = rawContent
+      .trim()
+      .replace(/^```(?:json)?\s*/i, '')
+      .replace(/\s*```$/i, '')
+      .trim();
+
     let parsed;
     try {
-      parsed = JSON.parse(content);
+      parsed = JSON.parse(cleanedJsonText);
     } catch {
       return res.status(502).json({
         code: 'INVALID_GROQ_JSON',
